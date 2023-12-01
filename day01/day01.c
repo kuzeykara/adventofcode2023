@@ -9,9 +9,8 @@ char find_digit(char*, int, int);
 
 int part1(char* filename) {
     FILE *fp;
-    char currLine[MAX_LINE];
+    char currLine[MAX_LINE], twoDigit[3];
     char currChar, firstDigit, lastDigit;
-    char twoDigit[3];
     int isFirst = 1, sum = 0;
     int calibration_value;
 
