@@ -1,2 +1,6 @@
+# the build folder and the makefile
 build
 makefile
+
+# template for each day start
+template.c

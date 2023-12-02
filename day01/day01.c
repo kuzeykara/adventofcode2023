@@ -176,7 +176,7 @@ char find_digit(char *line, int pos, int len) {
 
 int main(int argc, char** argv) {
     if (argc != 3) {
-        fprintf(stderr, "Usage: ./day01 <1|2> <inputfile>\n");
+        fprintf(stderr, "Usage: %s <1|2> <inputfile>\n", argv[0]);
         return 1;
     }
 
@@ -185,7 +185,7 @@ int main(int argc, char** argv) {
     } else if (strcmp(argv[1], "2") == 0) {
         printf("\nSum: %d\n", part2(argv[2]));
     } else {
-        fprintf(stderr, "Usage: ./day01 <1|2> <inputfile>\n");
+        fprintf(stderr, "Usage: %s <1|2> <inputfile>\n", argv[0]);
         return 1;
     }
 
