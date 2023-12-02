@@ -7,6 +7,7 @@
 
 int find_possible(char*);
 int is_possible(char *);
+int find_power(char*);
 
 int part1(char *filename) {
     FILE *fp;
@@ -28,14 +29,74 @@ int part1(char *filename) {
 
 
 int part2(char *filename) {
-    printf("Part 2!\n");
+    FILE *fp;
+    char currLine[MAX_LINE];
+    int sum = 0;
 
-    return 0;
+    if ((fp = fopen(filename, "r")) == NULL) {
+        fprintf(stderr, "Error opening file %s", filename);
+    }
+
+    while(fgets(currLine, MAX_LINE, fp)) {
+        sum += find_power(currLine);
+    }
+
+    fclose(fp);
+
+    return sum;
+}
+
+
+int find_power(char *line) {
+    int id, setCount=0, minGreen=0, minRed=0, minBlue=0, cubeCount;
+    char linecpy[MAX_LINE], throwaway[MAX_LINE], cubeSets[MAX_LINE][MAX_LINE];
+    char *firstPart, *secondPart, *set, *cube, color[6];
+
+    strcpy(linecpy, line);
+    firstPart = strtok(linecpy, ":");
+    secondPart = strtok(NULL, ":");
+
+    // getting the id
+    sscanf(firstPart, "%s %d", throwaway, &id);
+
+    // getting the cube sets
+    set = strtok(secondPart, ";");
+    while(set != NULL) {
+        strcpy(cubeSets[setCount], set);
+        setCount++;
+        set = strtok(NULL, ";");
+    }
+    
+    // for each set
+    for (int i=0; i<setCount; i++) {
+        // for each cube group
+        cube = strtok(cubeSets[i], ",");
+        while(cube != NULL) {
+            // get the count and color
+            sscanf(cube, "%d %s", &cubeCount, color);
+            if (strcmp(color, "red") == 0) {
+                if (cubeCount > minRed) {
+                    minRed = cubeCount;
+                }
+            } else if (strcmp(color, "green") == 0) {
+                if (cubeCount > minGreen) {
+                    minGreen = cubeCount;
+                }
+            } else if (strcmp(color, "blue") == 0) {
+                if (cubeCount > minBlue) {
+                    minBlue = cubeCount;
+                }
+            }
+            cube = strtok(NULL, ",");
+        }
+    }
+
+    return minRed*minGreen*minBlue;
 }
 
 
 int find_possible(char *line) {
-    int id, setCount=0, groupCount = 0;
+    int id, setCount=0;
     char linecpy[MAX_LINE], throwaway[MAX_LINE], cubeSets[MAX_LINE][MAX_LINE];
     char *firstPart, *secondPart, *set, *cube;
 
@@ -56,14 +117,12 @@ int find_possible(char *line) {
     
     // for each set
     for (int i=0; i<setCount; i++) {
-        groupCount = 0;
         // for each cube group
         cube = strtok(cubeSets[i], ",");
         while(cube != NULL) {
             if (is_possible(cube) == 0) {
                 return 0; // impossible!
             }
-            groupCount += 1;
             cube = strtok(NULL, ",");
         }
     }
@@ -106,7 +165,7 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "1") == 0) {
         printf("Sum: %d\n", part1(argv[2]));
     } else if (strcmp(argv[1], "2") == 0) {
-        part2(argv[2]);
+        printf("Sum: %d\n", part2(argv[2]));
     } else {
         fprintf(stderr, "Usage: %s <1|2> <inputfile>\n", argv[0]);
         return 1;
