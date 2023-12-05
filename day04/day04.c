@@ -5,6 +5,7 @@
 #define N 1000
 
 struct t_scratch_card {
+    int id;
     int winningNumCount;
     int winningNumbers[N/2];
     int ownedNumCount;
@@ -37,14 +38,35 @@ int part1(char *filename) {
 
 int part2(char *filename) {
     FILE *fp;
+    char currLine[N];
+    int sum=0, matches, card_copies[N/2], cardCount=0;
+    struct t_scratch_card currCard;
 
     if ((fp = fopen(filename, "r")) == NULL) {
         fprintf(stderr, "Error opening file %s", filename);
     }
 
-    printf("Part 2!\n");
+    for (int i=0; i<N/2; i++) {
+        card_copies[i] = 1;
+    }
 
-    return 0;
+    while (fgets(currLine, N, fp)) {
+        currCard = read_scratch(currLine);
+        cardCount++;
+        // find matches and create copies FOR EACH COPY
+        for (int j=0; j<card_copies[currCard.id]; j++) {
+            matches = find_matches(currCard);
+            for (int i=1; i<matches+1; i++) {
+                card_copies[cardCount+i]++;
+            }
+        }
+    }
+
+    for (int i=1; i<cardCount+1; i++) {
+        sum += card_copies[i];
+    }
+
+    return sum;
 }
 
 
@@ -80,12 +102,17 @@ int find_matches(struct t_scratch_card card) {
 
 struct t_scratch_card read_scratch(char *line) {
     struct t_scratch_card card;
-    char *all_numbers, *buff1, *buff2, *num;
+    char *buff1, *buff2, *num;
     int winC=0, ownC=0;
 
-    all_numbers = strtok(line, ":");
-    all_numbers = strtok(NULL, ":");
-    buff1 = strtok(all_numbers, "|");
+    buff1 = strtok(line, ":");
+    buff2 = strtok(NULL, ":");
+    
+    buff1 = strtok(buff1, " ");
+    buff1 = strtok(NULL, " ");
+    sscanf(buff1, "%d", &card.id);
+
+    buff1 = strtok(buff2, "|");
     buff2 = strtok(NULL, "|");
     
     num = strtok(buff1, " ");
